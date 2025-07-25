@@ -1,41 +1,15 @@
 #!/usr/bin/env python3
 
-# YouTube Downloader - Windows version with AutoHotkey support
-# Supports video download, audio download, and transcript copying
+# YouTube Transcript Copier - Windows version with AutoHotkey support
+# Supports transcript copying only
 
 import sys
 import os
-import yt_dlp
 from youtube_transcript_api import YouTubeTranscriptApi
 from urllib.parse import urlparse, parse_qs
 import pyperclip
 import tkinter as tk
 from tkinter import messagebox, simpledialog
-
-# Konfiguracja opcji pobierania wideo
-yt_dlp_opts_video = {
-    "format": "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]",
-    "outtmpl": os.path.expanduser("~/Desktop/%(title)s.%(ext)s"),
-    "postprocessors": [
-        {
-            "key": "FFmpegVideoConvertor",
-            "preferedformat": "mp4",  # Wymuszenie na mp4, jeśli konwersja jest konieczna
-        }
-    ],
-}
-
-# Konfiguracja opcji pobierania audio
-yt_dlp_opts_audio = {
-    "format": "bestaudio/best",
-    "outtmpl": os.path.expanduser("~/Desktop/%(title)s.%(ext)s"),
-    "postprocessors": [
-        {
-            "key": "FFmpegExtractAudio",
-            "preferredcodec": "mp3",
-            "preferredquality": "192",
-        }
-    ],
-}
 
 
 def get_video_id(url):
@@ -46,26 +20,6 @@ def get_video_id(url):
     elif parsed_url.hostname in ["youtu.be"]:
         return parsed_url.path[1:]
     return None
-
-
-def download_video(url):
-    """Pobiera wideo z YouTube"""
-    try:
-        with yt_dlp.YoutubeDL(yt_dlp_opts_video) as ydl:
-            ydl.download([url])
-        show_message("Sukces", "Wideo pobrane pomyślnie!")
-    except Exception as e:
-        show_message("Błąd", f"Błąd przy pobieraniu wideo: {str(e)}")
-
-
-def download_audio(url):
-    """Pobiera audio z YouTube"""
-    try:
-        with yt_dlp.YoutubeDL(yt_dlp_opts_audio) as ydl:
-            ydl.download([url])
-        show_message("Sukces", "Audio pobrane pomyślnie!")
-    except Exception as e:
-        show_message("Błąd", f"Błąd przy pobieraniu audio: {str(e)}")
 
 
 def copy_transcript(video_id):
@@ -90,51 +44,29 @@ def show_message(title, message):
 
 
 def get_user_input():
-    """Pobiera dane od użytkownika przez GUI"""
+    """Pobiera URL od użytkownika przez GUI"""
     root = tk.Tk()
     root.withdraw()  # Ukryj główne okno
     
     # Pobierz URL
-    url = simpledialog.askstring("YouTube Downloader", "Podaj URL YouTube:")
+    url = simpledialog.askstring("YouTube Transcript Copier", "Podaj URL YouTube:")
     if not url:
-        return None, None
+        return None
     
-    # Pobierz akcję
-    action_root = tk.Tk()
-    action_root.title("Wybierz akcję")
-    action_root.geometry("300x150")
-    action_root.resizable(False, False)
-    
-    # Wycentruj okno
-    action_root.eval('tk::PlaceWindow . center')
-    
-    selected_action = tk.StringVar(value="")
-    
-    def select_action(action):
-        selected_action.set(action)
-        action_root.destroy()
-    
-    tk.Label(action_root, text="Wybierz akcję:", font=("Arial", 12)).pack(pady=10)
-    
-    tk.Button(action_root, text="Pobierz film", command=lambda: select_action("1"), width=20).pack(pady=5)
-    tk.Button(action_root, text="Pobierz MP3", command=lambda: select_action("2"), width=20).pack(pady=5)
-    tk.Button(action_root, text="Skopiuj napisy", command=lambda: select_action("3"), width=20).pack(pady=5)
-    
-    action_root.mainloop()
-    
-    return url, selected_action.get()
+    return url
 
 
 def main():
-    # Sprawdź czy argumenty zostały przekazane z linii poleceń
-    if len(sys.argv) >= 3:
+    # Sprawdź czy URL został przekazany z linii poleceń
+    if len(sys.argv) >= 2:
         url = sys.argv[1]
-        user_input = sys.argv[2]
+        # Dla kompatybilności z AutoHotkey, jeśli podano drugi argument, ignoruj go
+        # (wcześniej był to numer akcji, teraz zawsze kopiujemy transkrypcję)
     else:
-        # Użyj GUI do pobrania danych
-        url, user_input = get_user_input()
+        # Użyj GUI do pobrania URL
+        url = get_user_input()
     
-    if not url or not user_input:
+    if not url:
         show_message("Błąd", "Anulowano operację.")
         return
 
@@ -143,14 +75,8 @@ def main():
         show_message("Błąd", "Podany URL jest niepoprawny. Spróbuj ponownie.")
         return
 
-    if user_input == "1":
-        download_video(url)
-    elif user_input == "2":
-        download_audio(url)
-    elif user_input == "3":
-        copy_transcript(video_id)
-    else:
-        show_message("Błąd", "Nieznana opcja, spróbuj ponownie...")
+    # Zawsze kopiuj transkrypcję
+    copy_transcript(video_id)
 
 
 if __name__ == "__main__":

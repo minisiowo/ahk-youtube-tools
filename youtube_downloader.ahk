@@ -1,4 +1,4 @@
-; YouTube Downloader AutoHotkey v2 Script
+; YouTube Transcript Copier AutoHotkey v2 Script
 ; Skrót klawiszowy: Win + Y
 
 #Requires AutoHotkey v2.0
@@ -27,7 +27,7 @@ CurrentURL := ""
         ShowActionMenu(ClipboardURL)
     } else {
         try {
-            UserURL := InputBox("Podaj URL YouTube:", "YouTube Downloader", "w400 h130")
+            UserURL := InputBox("Podaj URL YouTube:", "YouTube Transcript Copier", "w400 h130")
             if (UserURL.Result != "Cancel" && UserURL.Value != "") {
                 ShowActionMenu(UserURL.Value)
             }
@@ -51,8 +51,6 @@ ShowActionMenu(URL)
     }
     
     ActionMenu := Menu()
-    ActionMenu.Add("Pobierz film", (*) => RunPythonScript(URL, "1"))
-    ActionMenu.Add("Pobierz MP3", (*) => RunPythonScript(URL, "2"))
     ActionMenu.Add("Skopiuj napisy", (*) => RunPythonScript(URL, "3"))
     ActionMenu.Add()
     ActionMenu.Add("Anuluj", (*) => "")
@@ -72,8 +70,6 @@ RunPythonScript(URL, Action)
     ; Pokaż komunikat o rozpoczęciu procesu
     ActionText := ""
     switch Action {
-        case "1": ActionText := "Pobieranie filmu..."
-        case "2": ActionText := "Pobieranie MP3..."
         case "3": ActionText := "Kopiowanie napisów..."
     }
     
@@ -103,27 +99,25 @@ RunPythonScript(URL, Action)
 ; Win + F1 - Pokaż help
 #F1::
 {
-    HelpText := "YouTube Downloader - Skróty klawiszowe:`n`n"
-    HelpText .= "Win + Y          - Główna funkcja`n"
+    HelpText := "YouTube Transcript Copier - Skróty klawiszowe:`n`n"
+    HelpText .= "Win + Y          - Skopiuj napisy`n"
     HelpText .= "Alt + Win + Y    - Uruchom z GUI`n"
     HelpText .= "Ctrl + Win + Y   - Otwórz folder Desktop`n"
     HelpText .= "Win + F1         - Pokaż tę pomoc`n`n"
     HelpText .= "Obsługiwane formaty URL:`n"
     HelpText .= "- https://www.youtube.com/watch?v=...`n"
     HelpText .= "- https://youtu.be/...`n`n"
-    HelpText .= "Pliki są zapisywane na Pulpicie."
+    HelpText .= "Napisy są kopiowane do schowka."
     
-    MsgBox(HelpText, "YouTube Downloader - Pomoc", "64")
+    MsgBox(HelpText, "YouTube Transcript Copier - Pomoc", "64")
 }
 
 ; Ctrl + Alt + H - Info o skrypcie
 ^!h::
 {
-    InfoText := "YouTube Downloader AutoHotkey Script`n`n"
+    InfoText := "YouTube Transcript Copier AutoHotkey Script`n`n"
     InfoText .= "Funkcje:`n"
-    InfoText .= "- Pobieranie filmów z YouTube`n"
-    InfoText .= "- Pobieranie audio (MP3)`n"
-    InfoText .= "- Kopiowanie napisów do schowka`n`n"
+    InfoText .= "- Kopiowanie napisów z YouTube do schowka`n`n"
     InfoText .= "Skróty:`n"
     InfoText .= "Win + Y - Uruchom główną funkcję`n"
     InfoText .= "Alt + Win + Y - Uruchom GUI`n"
@@ -132,5 +126,5 @@ RunPythonScript(URL, Action)
     InfoText .= "Ścieżka Python: " . PythonPath . "`n"
     InfoText .= "Ścieżka skryptu: " . ScriptPath
     
-    MsgBox(InfoText, "YouTube Downloader Info", "64")
+    MsgBox(InfoText, "YouTube Transcript Copier Info", "64")
 }
