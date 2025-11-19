@@ -28,17 +28,17 @@ ScriptPath := A_ScriptDir . "\transcribe.py"
         errorOutput := exec.StdErr.ReadAll()
         
         ; Wyświetl komunikat w zależności od wyniku
-        if (InStr(output, "SUKCES")) {
-            TrayTip("Transkrypcja pobrana", "Transkrypcja została skopiowana do schowka", 1)
-        } else if (InStr(output, "BŁĄD") || errorOutput != "") {
+        if (InStr(output, "SUCCESS")) {
+            TrayTip("Transcript downloaded", "Transcript has been copied to clipboard", 1)
+        } else if (InStr(output, "ERROR") || errorOutput != "") {
             ; Wyciągnij treść błędu
-            errorMsg := (errorOutput != "") ? errorOutput : RegExReplace(output, "BŁĄD:\s*", "")
-            MsgBox(errorMsg, "Błąd", "16")
+            errorMsg := (errorOutput != "") ? errorOutput : RegExReplace(output, "ERROR:\s*", "")
+            MsgBox(errorMsg, "Error", "16")
         } else if (output != "") {
             ; Pokaż cały output jeśli nie ma standardowego komunikatu
-            MsgBox(output, "Wynik", "64")
+            MsgBox(output, "Result", "64")
         }
     } catch Error as err {
-        MsgBox("Błąd podczas uruchamiania skryptu: " . err.message, "Błąd", "16")
+        MsgBox("Error running script: " . err.message, "Error", "16")
     }
 }

@@ -59,10 +59,10 @@ Quickly copy YouTube transcripts with a single keyboard shortcut.
 
 ## Troubleshooting
 
-### Error: "Brak prawidłowego URL YouTube w schowku" (No valid YouTube URL in clipboard)
+### Error: "No valid YouTube URL in clipboard"
 - Make sure you copied a YouTube link before pressing Win+Y
 
-### Error: "Python nie jest rozpoznawany" (Python is not recognized)
+### Error: "Python is not recognized"
 - Install Python or edit `PythonPath` in the .ahk file
 
 ### Error fetching transcript

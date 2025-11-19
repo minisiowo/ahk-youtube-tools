@@ -26,13 +26,13 @@ def main():
     
     # Walidacja URL
     if not url or not ("youtube.com" in url or "youtu.be" in url):
-        print("BŁĄD: Brak prawidłowego URL YouTube w schowku")
+        print("ERROR: No valid YouTube URL in clipboard")
         return
     
     # Wyciągnij ID video
     video_id = get_video_id(url)
     if not video_id:
-        print("BŁĄD: Nieprawidłowy URL YouTube")
+        print("ERROR: Invalid YouTube URL")
         return
     
     # Pobierz transkrypcję
@@ -43,9 +43,9 @@ def main():
         
         # Skopiuj do schowka
         pyperclip.copy(text)
-        print("SUKCES: Transkrypcja skopiowana do schowka")
+        print("SUCCESS: Transcript copied to clipboard")
     except Exception as e:
-        print(f"BŁĄD: {str(e)}")
+        print(f"ERROR: {str(e)}")
 
 
 if __name__ == "__main__":
