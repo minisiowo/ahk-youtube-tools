@@ -1,85 +1,85 @@
 # YouTube Transcript Copier
 
-Szybkie kopiowanie transkrypcji z YouTube jednym skrótem klawiszowym.
+Quickly copy YouTube transcripts with a single keyboard shortcut.
 
-## Wymagania
+## Requirements
 
 ### Python
-- Python 3.7 lub nowszy
-- pip (menedżer pakietów Python)
+- Python 3.7 or newer
+- pip (Python package manager)
 
 ### AutoHotkey
-- AutoHotkey v2.0 lub nowszy (pobierz z https://www.autohotkey.com/)
-- **UWAGA: Wymagana jest wersja 2.0+**
+- AutoHotkey v2.0 or newer (download from https://www.autohotkey.com/)
+- **NOTE: Version 2.0+ is required**
 
-## Instalacja
+## Installation
 
-1. **Zainstaluj wymagane biblioteki Python:**
+1. **Install required Python libraries:**
    ```bash
    pip install -r requirements.txt
    ```
 
-2. **Zainstaluj AutoHotkey** (jeśli jeszcze nie masz)
+2. **Install AutoHotkey** (if you haven't already)
 
-3. **Uruchom skrypt AutoHotkey:**
-   - Kliknij dwukrotnie na `youtube_downloader.ahk`
+3. **Run the AutoHotkey script:**
+   - Double-click on `youtube_downloader.ahk`
 
-## Użycie
+## Usage
 
-### Szybka instrukcja
-1. Skopiuj URL YouTube do schowka (Ctrl+C)
-2. Naciśnij **Win + T**
-3. Gotowe! Transkrypcja jest w schowku
+### Quick Start
+1. Copy a YouTube URL to the clipboard (Ctrl+C)
+2. Press **Win + Y**
+3. Done! The transcript is in your clipboard
 
-### Skrót klawiszowy
+### Keyboard Shortcut
 
-- **Win + T** - Pobierz transkrypcję
-  - Automatycznie pobiera URL ze schowka
-  - Waliduje link YouTube
-  - Pobiera transkrypcję (preferuje polski, potem angielski)
-  - Kopiuje transkrypcję do schowka
-  - Wyświetla krótki komunikat o sukcesie/błędzie
+- **Win + Y** - Download transcript
+  - Automatically retrieves URL from clipboard
+  - Validates YouTube link
+  - Fetches transcript (prefers Polish, then English)
+  - Copies transcript to clipboard
+  - Displays a short success/error message
 
-### Obsługiwane formaty URL
+### Supported URL Formats
 
 - `https://www.youtube.com/watch?v=VIDEO_ID`
 - `https://youtu.be/VIDEO_ID`
 
-## Komunikaty
+## Messages
 
-- **Sukces**: Pojawi się powiadomienie w tray'u
-- **Błąd**: Pojawi się okienko z opisem problemu
+- **Success**: A notification will appear in the tray
+- **Error**: A popup window with the problem description will appear
 
-## Pliki w projekcie
+## Project Files
 
-- `transcribe.py` - Prosty skrypt Python bez GUI
-- `youtube_downloader.ahk` - Skrypt AutoHotkey z jednym skrótem
-- `requirements.txt` - Lista wymaganych bibliotek Python
-- `README.md` - Ten plik
+- `transcribe.py` - Simple Python script without GUI
+- `youtube_downloader.ahk` - AutoHotkey script with a single shortcut
+- `requirements.txt` - List of required Python libraries
+- `README.md` - This file
 
-## Rozwiązywanie problemów
+## Troubleshooting
 
-### Błąd: "Brak prawidłowego URL YouTube w schowku"
-- Upewnij się, że skopiowałeś link YouTube przed naciśnięciem Win+T
+### Error: "Brak prawidłowego URL YouTube w schowku" (No valid YouTube URL in clipboard)
+- Make sure you copied a YouTube link before pressing Win+Y
 
-### Błąd: "Python nie jest rozpoznawany"
-- Zainstaluj Python lub edytuj `PythonPath` w pliku .ahk
+### Error: "Python nie jest rozpoznawany" (Python is not recognized)
+- Install Python or edit `PythonPath` in the .ahk file
 
-### Błąd przy pobieraniu transkrypcji
-- Nie wszystkie filmy mają dostępne napisy
-- Sprawdź czy film ma włączone napisy lub automatyczne napisy
+### Error fetching transcript
+- Not all videos have subtitles available
+- Check if the video has subtitles or auto-generated captions enabled
 
-## Customizacja
+## Customization
 
-Możesz edytować plik `transcribe.py` aby:
-- Zmienić folder docelowy (aktualnie `~/Desktop/`)
-- Zmienić jakość audio/video
-- Dodać obsługę innych języków napisów
-- Zmienić format wyjściowy
+You can edit the `transcribe.py` file to:
+- Change the target folder (currently `~/Desktop/`)
+- Change audio/video quality
+- Add support for other subtitle languages
+- Change output format
 
-## Licencja
+## License
 
-Ten skrypt używa następujących bibliotek:
-- yt-dlp - do pobierania filmów z YouTube
-- youtube-transcript-api - do pobierania napisów
-- pyperclip - do operacji na schowku
+This script uses the following libraries:
+- yt-dlp - for downloading YouTube videos
+- youtube-transcript-api - for fetching subtitles
+- pyperclip - for clipboard operations
