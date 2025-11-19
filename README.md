@@ -1,4 +1,4 @@
-# YouTube Transcript Copier - Prosty narzędzie bez GUI
+# YouTube Transcript Copier
 
 Szybkie kopiowanie transkrypcji z YouTube jednym skrótem klawiszowym.
 
