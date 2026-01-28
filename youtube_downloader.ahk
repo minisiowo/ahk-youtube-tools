@@ -7,7 +7,7 @@ SendMode("Input")
 SetWorkingDir(A_ScriptDir)
 
 ; Ustawienia
-PythonPath := A_ScriptDir . "\venv\Scripts\pythonw.exe"
+PythonPath := A_ScriptDir . "\.venv\Scripts\pythonw.exe"
 ScriptPath := A_ScriptDir . "\transcribe.py"
 
 ; Główny skrót klawiszowy - Win + Y

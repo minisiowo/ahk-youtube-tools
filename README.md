@@ -14,14 +14,23 @@ Quickly copy YouTube transcripts with a single keyboard shortcut.
 
 ## Installation
 
-1. **Install required Python libraries:**
+1. **(Optional) Create a virtual environment:**
+   ```bash
+   python -m venv .venv
+   # Windows:
+   .venv\Scripts\activate
+   # macOS/Linux:
+   source .venv/bin/activate
+   ```
+
+2. **Install required Python libraries:**
    ```bash
    pip install -r requirements.txt
    ```
 
-2. **Install AutoHotkey** (if you haven't already)
+3. **Install AutoHotkey** (if you haven't already)
 
-3. **Run the AutoHotkey script:**
+4. **Run the AutoHotkey script:**
    - Double-click on `youtube_downloader.ahk`
 
 ## Usage
