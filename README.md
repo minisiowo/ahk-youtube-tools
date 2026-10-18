@@ -51,12 +51,16 @@ Quickly copy YouTube transcripts with a single keyboard shortcut.
 
 ### Supported URL Formats
 
-- `https://www.youtube.com/watch?v=VIDEO_ID`
+- `https://www.youtube.com/watch?v=VIDEO_ID` (also `m.youtube.com` and `music.youtube.com`)
 - `https://youtu.be/VIDEO_ID`
+- `https://www.youtube.com/shorts/VIDEO_ID`
+- `https://www.youtube.com/live/VIDEO_ID`
+- `https://www.youtube.com/embed/VIDEO_ID`
 
 ## Messages
 
-- **Success**: A notification will appear in the tray
+- **In progress**: A "Downloading transcript..." tooltip appears next to the cursor
+- **Success**: A tooltip and a tray notification confirm the transcript was copied
 - **Error**: A popup window with the problem description will appear
 
 ## Project Files
@@ -78,17 +82,18 @@ Quickly copy YouTube transcripts with a single keyboard shortcut.
 - Not all videos have subtitles available
 - Check if the video has subtitles or auto-generated captions enabled
 
+### Error: "Timed out"
+- The download is stopped after 30 seconds (`TimeoutMs` in the .ahk file)
+- Check your internet connection
+
 ## Customization
 
-You can edit the `transcribe.py` file to:
-- Change the target folder (currently `~/Desktop/`)
-- Change audio/video quality
-- Add support for other subtitle languages
-- Change output format
+- Edit `languages=["pl", "en"]` in `transcribe.py` to change the preferred subtitle languages
+- Edit `TimeoutMs` in `youtube_downloader.ahk` to change the download timeout
+- Edit the `#y::` line in `youtube_downloader.ahk` to change the keyboard shortcut
 
 ## License
 
 This script uses the following libraries:
-- yt-dlp - for downloading YouTube videos
 - youtube-transcript-api - for fetching subtitles
 - pyperclip - for clipboard operations
