@@ -3,15 +3,37 @@
 # YouTube Transcript Copier - prosty skrypt bez GUI
 # Pobiera link ze schowka i kopiuje transkrypcję
 
+import json
+import os
 import re
 import sys
-from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_transcript_api import (
+    YouTubeTranscriptApi,
+    AgeRestricted,
+    IpBlocked,
+    NoTranscriptFound,
+    RequestBlocked,
+    TranscriptsDisabled,
+    VideoUnavailable,
+)
 from urllib.parse import urlparse, parse_qs
 import pyperclip
 
 
+LANGUAGES = ["pl", "en"]
 YOUTUBE_HOSTS = {"youtube.com", "www.youtube.com", "m.youtube.com", "music.youtube.com"}
 VIDEO_ID_PATTERN = re.compile(r"^[A-Za-z0-9_-]{11}$")
+# Opcjonalny plik z ciasteczkami YouTube (format Netscape) - pomaga yt-dlp, gdy YouTube żąda logowania
+COOKIES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cookies.txt")
+
+# Krótkie komunikaty zamiast długich opisów wyjątków z youtube-transcript-api
+ERROR_MESSAGES = [
+    ((IpBlocked, RequestBlocked), "YouTube is temporarily blocking requests from your IP. Try again later or from another network."),
+    ((TranscriptsDisabled,), "Subtitles are disabled for this video."),
+    ((NoTranscriptFound,), "No Polish or English subtitles found for this video."),
+    ((VideoUnavailable,), "This video is unavailable."),
+    ((AgeRestricted,), "This video is age-restricted."),
+]
 
 
 def get_video_id(url):
@@ -36,6 +58,70 @@ def get_video_id(url):
     return None
 
 
+def fetch_with_transcript_api(video_id):
+    """Pobiera transkrypcję przez youtube-transcript-api"""
+    fetched_transcript = YouTubeTranscriptApi().fetch(video_id, languages=LANGUAGES)
+    return " ".join(snippet.text for snippet in fetched_transcript.snippets)
+
+
+def pick_subtitle_track(tracks, original_only=False):
+    """Wybiera ścieżkę napisów w formacie json3 wg kolejności LANGUAGES (np. 'en' pasuje też do 'en-US')"""
+    for language in LANGUAGES:
+        for track_language, formats in tracks.items():
+            base_language = track_language.split("-")[0]
+            if base_language != language:
+                continue
+            # Automatyczne napisy oznaczone "-orig" to oryginał, pozostałe są maszynowo tłumaczone
+            if original_only and not track_language.endswith("-orig"):
+                continue
+            for subtitle_format in formats:
+                if subtitle_format.get("ext") == "json3":
+                    return subtitle_format["url"]
+    return None
+
+
+def fetch_with_yt_dlp(video_id):
+    """Zapasowa metoda: pobiera napisy przez yt-dlp"""
+    import yt_dlp
+
+    class SilentLogger:
+        # yt-dlp pisze ostrzeżenia na stderr, a AHK traktuje każdy stderr jako błąd
+        def debug(self, msg): pass
+        def info(self, msg): pass
+        def warning(self, msg): pass
+        def error(self, msg): pass
+
+    options = {"skip_download": True, "quiet": True, "no_warnings": True, "logger": SilentLogger()}
+    if os.path.isfile(COOKIES_FILE):
+        options["cookiefile"] = COOKIES_FILE
+    with yt_dlp.YoutubeDL(options) as ydl:
+        info = ydl.extract_info(f"https://www.youtube.com/watch?v={video_id}", download=False)
+        subtitle_url = (
+            pick_subtitle_track(info.get("subtitles") or {})
+            or pick_subtitle_track(info.get("automatic_captions") or {}, original_only=True)
+            or pick_subtitle_track(info.get("automatic_captions") or {})
+        )
+        if not subtitle_url:
+            raise LookupError("No Polish or English subtitles found for this video.")
+        data = json.loads(ydl.urlopen(subtitle_url).read().decode("utf-8"))
+
+    segments = [
+        segment.get("utf8", "")
+        for event in data.get("events", [])
+        for segment in event.get("segs", [])
+    ]
+    return "".join(segments)
+
+
+def short_error_message(error):
+    for error_types, message in ERROR_MESSAGES:
+        if isinstance(error, error_types):
+            return message
+    # Nieznany błąd - pokaż tylko pierwszą niepustą linię
+    lines = [line.strip() for line in str(error).splitlines() if line.strip()]
+    return lines[0] if lines else type(error).__name__
+
+
 def main():
     # Pobierz URL ze schowka
     url = pyperclip.paste().strip()
@@ -51,17 +137,27 @@ def main():
         print("ERROR: Invalid YouTube URL")
         return
 
-    # Pobierz transkrypcję
+    # Pobierz transkrypcję, a w razie problemu spróbuj przez yt-dlp
     try:
-        ytt_api = YouTubeTranscriptApi()
-        fetched_transcript = ytt_api.fetch(video_id, languages=["pl", "en"])
-        text = re.sub(r'\s+', ' ', " ".join([snippet.text for snippet in fetched_transcript.snippets]))
+        text = fetch_with_transcript_api(video_id)
+    except Exception as primary_error:
+        try:
+            text = fetch_with_yt_dlp(video_id)
+        except Exception as fallback_error:
+            message = short_error_message(primary_error)
+            if "Sign in to confirm" in str(fallback_error):
+                message += " The yt-dlp fallback was blocked too (YouTube requires sign-in) - see 'cookies.txt' in README."
+            print(f"ERROR: {message}")
+            return
 
-        # Skopiuj do schowka
-        pyperclip.copy(text)
-        print("SUCCESS: Transcript copied to clipboard")
-    except Exception as e:
-        print(f"ERROR: {str(e)}")
+    text = re.sub(r'\s+', ' ', text).strip()
+    if not text:
+        print("ERROR: The transcript is empty")
+        return
+
+    # Skopiuj do schowka
+    pyperclip.copy(text)
+    print("SUCCESS: Transcript copied to clipboard")
 
 
 if __name__ == "__main__":
